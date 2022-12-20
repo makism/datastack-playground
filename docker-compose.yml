@@ -1,0 +1,84 @@
+networks:
+  spark-cluster:
+    driver: bridge
+
+services:
+  jupyterlab:
+    image: jupyterlab:latest
+    container_name: jupyterlab
+    ports:
+      - 8888:8888
+    networks:
+      - spark-cluster
+    links:
+      - minio
+      - spark-master
+    volumes:
+      - ./workspace/:/opt/workspace/
+    depends_on:
+      - minio
+      - spark-master
+  minio:
+    image: quay.io/minio/minio:LATEST
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio123
+      - MINIO_SERVER_URL=http://minio:9000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://minio:9000/minio/health/live"
+        ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    ports:
+      - 9000:9000
+      - 9001:9001
+    networks:
+      - spark-cluster
+    volumes:
+      - ./minio_data:/data
+  spark-master:
+    image: spark-master:latest
+    container_name: spark-master
+    environment:
+      - SPARK_WORKLOAD=master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    networks:
+      - spark-cluster
+    links:
+      - minio
+    volumes:
+      - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./hadoop-conf/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+  spark-workers:
+    image: spark-worker:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKLOAD=worker
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=2G
+    ports:
+      - 9091-9099:8080
+      - 7000-7009:7000
+    networks:
+      - spark-cluster
+    links:
+      - minio
+    volumes:
+      - ./spark-conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - ./hadoop-conf/core-site.xml:/opt/spark/etc/hadoop/core-site.xml
+    depends_on:
+      - spark-master
