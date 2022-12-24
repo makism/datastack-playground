@@ -27,6 +27,10 @@ docker-compose up
 
 Clone and run the Airbyte repo locally; follow the instructions at https://docs.airbyte.com/deploying-airbyte/local-deployment.
 
+#### CLI
+
+You may need to install the Airbyte CLI. See https://docs.airbyte.com/understanding-airbyte/airbyte-cli and https://github.com/airbytehq/airbyte/blob/master/octavia-cli/README.md
+
 ### Lightdashd
 
 Clone and run the Lightdash repo locally; follow the instructions at https://docs.lightdash.com/getting-started/quickstart.
