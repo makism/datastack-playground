@@ -3,17 +3,6 @@ networks:
     driver: bridge
 
 services:
-  airflow:
-    image: apache/airflow:2.5.0
-    ports:
-      - 8080:8080
-    volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/plugins:/opt/airflow/plugins
-    networks:
-      - spark-cluster
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
   jupyterlab:
     image: jupyterlab:latest
     container_name: jupyterlab
