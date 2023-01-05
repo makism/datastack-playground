@@ -101,14 +101,14 @@ services:
     <<: *airflow-common
     command: webserver
     ports:
-      - 8080:8080
+      - 9080:8080
     healthcheck:
       test:
         [
           "CMD",
           "curl",
           "--fail",
-          "http://localhost:8080/health"
+          "http://localhost:9080/health"
         ]
       interval: 10s
       timeout: 10s
