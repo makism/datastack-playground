@@ -1,5 +1,6 @@
 networks:
   spark-cluster:
+    name: spark-cluster
     driver: bridge
 
 services:
