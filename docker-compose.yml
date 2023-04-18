@@ -45,6 +45,15 @@ services:
       - spark-cluster
     volumes:
       - ./minio_data:/data
+  minio-init:
+    image: minio/mc:LATEST
+    container_name: minio-init
+    entrypoint: sh
+    command: -c 'mc config host add minio http://minio:9000 minio minio123 && mc mb minio/lake && mc mb minio/incoming'
+    networks:
+      - spark-cluster
+    depends_on:
+      - minio
   spark-master:
     image: spark-master:latest
     container_name: spark-master
