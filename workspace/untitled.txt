@@ -1,1 +1,0 @@
-https://docs.cloudera.com/runtime/7.2.10/running-spark-applications/topics/spark-configure-properties-spark-defaults-conf.html
